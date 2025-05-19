@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 
 class AIService {
   constructor() {
-    this.apiKey = "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";
+    this.apiKey = config.claudeApiKey;
     this.apiUrl = config.claudeApiUrl;
     this.model = config.claudeModel;
     
