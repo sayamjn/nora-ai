@@ -4,6 +4,8 @@ const logger = require('../utils/logger');
 
 const connectDB = async () => {
   try {
+    logger.info(`Connecting to MongoDB with URI: ${config.mongoURI}`);
+    
     const conn = await mongoose.connect(config.mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

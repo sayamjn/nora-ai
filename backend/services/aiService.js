@@ -8,7 +8,6 @@ class AIService {
     this.apiKey = process.env.CLAUDE_API_KEY;
     this.apiUrl = config.claudeApiUrl;
     this.model = config.claudeModel;
-    
     if (!this.apiKey) {
       logger.error('Claude API key is not set');
     }
@@ -98,11 +97,21 @@ Be fair, balanced, and constructive in your feedback.`;
     try {
       const systemPrompt = this.generateSystemPrompt(interview.resumeText, interview.jobDescription);
       
-      const messages = [
-        { role: 'system', content: systemPrompt },
-        ...previousMessages
+      let messages = [
+        { role: 'system', content: systemPrompt }
       ];
       
+      // Add previous messages
+      for (const msg of previousMessages) {
+        if (msg.role !== 'system') {
+          messages.push({
+            role: msg.role,
+            content: msg.content
+          });
+        }
+      }
+      
+      // Add the final prompt
       if (previousMessages.length === 0) {
         messages.push({
           role: 'user', 
@@ -115,6 +124,17 @@ Be fair, balanced, and constructive in your feedback.`;
         });
       }
       
+      console.log('Sending request to Claude API:', {
+        model: this.model,
+        messages: messages.length,
+        max_tokens: 1000
+      });
+      
+      // Log the API key (first 10 chars only for security)
+      if (this.apiKey) {
+        console.log('Using API key starting with:', this.apiKey.substring(0, 10) + '...');
+      }
+      
       const response = await this.axiosInstance.post(this.apiUrl, {
         model: this.model,
         messages: messages,
@@ -122,8 +142,14 @@ Be fair, balanced, and constructive in your feedback.`;
         temperature: 0.7
       });
       
-      return response.data.content[0].text;
+      if (response.data && response.data.content && response.data.content.length > 0) {
+        return response.data.content[0].text;
+      } else {
+        logger.error('Unexpected response format from Claude API:', JSON.stringify(response.data));
+        throw new Error('Unexpected response format from Claude API');
+      }
     } catch (error) {
+      console.log('Claude API error details:', error.response?.data || error.message);
       logger.error(`Error generating interview question: ${error.message}`);
       throw new Error('Failed to generate interview question');
     }

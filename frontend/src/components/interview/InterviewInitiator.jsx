@@ -44,9 +44,24 @@ const InterviewInitiator = () => {
       return;
     }
     
+    console.log('Creating interview with files:', files);
+    console.log('Job title:', jobTitle);
+    
     const formData = createFormData({ jobTitle });
     
-    await handleCreateInterview(formData);
+    try {
+      const result = await handleCreateInterview(formData);
+      console.log('Interview created:', result);
+      
+      if (result && result._id) {
+        navigate(`/interviews/${result._id}`);
+      } else {
+        console.error('Created interview but no ID returned:', result);
+      }
+    } catch (error) {
+      console.error('Error creating interview:', error);
+      alert('Failed to create interview. Please try again.');
+    }
   };
   
   return (

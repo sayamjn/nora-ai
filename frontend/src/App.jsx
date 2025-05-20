@@ -11,6 +11,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import Login from './components/user/Login';
 import Register from './components/user/Register';
 import useAuth from './hooks/useAuth';
+import InterviewInitiator from './components/interview/InterviewInitiator';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuth, loading } = useAuth();
@@ -50,7 +51,7 @@ const App = () => {
                 path="interviews/new"
                 element={
                   <ProtectedRoute>
-                    <InterviewPage />
+                    <InterviewInitiator />
                   </ProtectedRoute>
                 }
               />

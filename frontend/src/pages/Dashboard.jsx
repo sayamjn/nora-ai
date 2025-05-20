@@ -12,34 +12,41 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('interviews');
   
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const interviewsResponse = await getInterviews();
-        if (interviewsResponse.success) {
-          setInterviews(interviewsResponse.data);
-        } else {
-          setError(interviewsResponse.message || 'Failed to fetch interviews');
-        }
-        
-        const feedbacksResponse = await getAllFeedbacks();
-        if (feedbacksResponse.success) {
-          setFeedbacks(feedbacksResponse.data);
-        } else {
-          setError(feedbacksResponse.message || 'Failed to fetch feedbacks');
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
     
-    fetchData();
-  }, []);
+    try {
+      console.log('Fetching interviews and feedbacks...');
+      
+      const interviewsResponse = await getInterviews();
+      console.log('Interviews response:', interviewsResponse);
+      
+      if (interviewsResponse.success) {
+        setInterviews(interviewsResponse.data);
+      } else {
+        setError(interviewsResponse.message || 'Failed to fetch interviews');
+      }
+      
+      const feedbacksResponse = await getAllFeedbacks();
+      console.log('Feedbacks response:', feedbacksResponse);
+      
+      if (feedbacksResponse.success) {
+        setFeedbacks(feedbacksResponse.data);
+      } else {
+        setError(feedbacksResponse.message || 'Failed to fetch feedbacks');
+      }
+    } catch (err) {
+      console.error('Dashboard error:', err);
+      setError(err.response?.data?.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchData();
+}, []);
   
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString(undefined, {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatInterface from '../components/interview/ChatInterface';
+import InterviewInitiator from '../components/interview/InterviewInitiator'; 
 import Button from '../components/common/Button';
 import { FullPageLoader } from '../components/common/Loader';
 import useInterview from '../hooks/useInterview';
@@ -29,19 +30,25 @@ const InterviewPage = () => {
   
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [localTranscript, setLocalTranscript] = useState([]);
+
+    if (id === "new") {
+    return <InterviewInitiator />;
+  }
   
   useEffect(() => {
     const fetchData = async () => {
       setIsPageLoading(true);
       
       try {
-        const interview = await fetchInterview(id);
-        
-        if (interview?.transcript) {
-          const transcriptData = await fetchTranscript(id);
+        if (id && id !== "new") {
+          const interview = await fetchInterview(id);
           
-          if (transcriptData) {
-            setLocalTranscript(transcriptData.messages || []);
+          if (interview?.transcript) {
+            const transcriptData = await fetchTranscript(id);
+            
+            if (transcriptData) {
+              setLocalTranscript(transcriptData.messages || []);
+            }
           }
         }
       } finally {
@@ -56,9 +63,20 @@ const InterviewPage = () => {
     };
   }, [id]);
   
-  const handleStartInterview = async () => {
+const handleStartInterview = async () => {
+  try {
     await startInterview(id);
-  };
+    // Force reload to update UI
+    window.location.reload();
+  } catch (error) {
+    console.error("Error starting interview:", error);
+    alert("There was an error starting the interview. The system will use pre-defined questions instead.");
+    
+    // Refresh the page to show the chat interface
+    window.location.reload();
+  } finally {
+  }
+};
   
   const handleSubmitAnswer = async (answer) => {
     await submitAnswer(id, answer);
@@ -103,11 +121,11 @@ const InterviewPage = () => {
     );
   }
   
-  const canStartInterview = interviewData.status === 'pending';
+const canStartInterview = interviewData && interviewData.status === 'pending';
   
-  const isActive = isInterviewActive || interviewData.status === 'in-progress';
+const isActive = isInterviewActive || (interviewData && interviewData.status === 'in-progress');
   
-  const isComplete = isInterviewComplete || interviewData.status === 'completed';
+const isComplete = isInterviewComplete || (interviewData && interviewData.status === 'completed');
   
   const displayTranscript = transcript.length > 0 ? transcript : localTranscript;
   

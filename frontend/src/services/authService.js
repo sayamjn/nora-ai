@@ -65,6 +65,11 @@ export const updateProfile = async (userData) => {
  * @param {Object} userData - User data with token
  */
 const storeUserData = (userData) => {
+  console.log('Storing user data:', userData);
+  if (!userData.token) {
+    console.error('No token in user data!');
+  }
+  
   localStorage.setItem('token', userData.token);
   localStorage.setItem('user', JSON.stringify({
     id: userData._id,
@@ -72,6 +77,9 @@ const storeUserData = (userData) => {
     email: userData.email,
     role: userData.role
   }));
+  
+  console.log('Stored token:', localStorage.getItem('token'));
+  console.log('Stored user:', localStorage.getItem('user'));
 };
 
 /**
