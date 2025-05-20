@@ -76,7 +76,25 @@ Set up environment variables
 
 .env in both the backend and frontend directories
 
-Update the .env for claude api key
+Update the .env for 
+
+BACKEND
+
+NODE_ENV=development
+
+PORT=5000
+
+MONGO_URI=mongodb://localhost:27017/nora-ai
+
+JWT_SECRET=your_jwt_secret_key
+
+CLAUDE_API_KEY=key
+
+CLAUDE_MODEL=claude-3-sonnet-20240229
+
+FRONTEND
+
+VITE_API_URL=http://localhost:5000/api
 
 Update the environment variables with your own values
 
